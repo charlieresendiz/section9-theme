@@ -1,7 +1,11 @@
+import { atom, read, update } from 'claude-code'
 import type { Register, ThemeSetArgs, ThemeMessageRule } from 'claude-code'
 
 import { makeColors } from './make-colors.js'
-import { SCENE } from './scene.js'
+import { SCENE, SCENE_ACTIVE } from './scene.js'
+
+// Turns running now. Above zero, the backdrop shows the downpour scene.
+const activeTurns = atom({ plugin: 'gits-section9', key: 'activeTurns' } as const, 0)
 
 // Section 9 // Net Dive: phosphor teal on wet night glass. Dark only.
 const { theme, problems } = makeColors({
@@ -122,14 +126,30 @@ export const register: Register = on => {
     if (!set.isDrawn) {
       $.ui.status(set.reason)
     }
+    // A fresh session (or a reload) starts calm.
+    await update($, activeTurns, () => 0)
     return next(e)
   })
 
-  on('ui.render', { component: 'Backdrop' }, ($, e, next) => {
+  // While any turn runs, the rain turns to a downpour.
+  on('turn.start', async ($, e, next) => {
+    await update($, activeTurns, n => n + 1)
+    return next(e)
+  })
+
+  on('turn.complete', async ($, e, next) => {
+    await update($, activeTurns, n => Math.max(0, n - 1))
+    return next(e)
+  })
+
+  on('ui.render', { component: 'Backdrop' }, async ($, e, next) => {
     if (e.surface !== 'desktop' && e.surface !== 'mobile') {
       return next(e)
     }
     const { Svg } = $.ui.resolve(e)
+    if ((await read($, activeTurns)) > 0) {
+      return <Svg source={SCENE_ACTIVE} alt="The net city in a downpour of bright green code while Claude works" isInteractive />
+    }
     return <Svg source={SCENE} alt="A rain-soaked net city at night, green code falling past a rotating HUD reticle" isInteractive />
   })
 }

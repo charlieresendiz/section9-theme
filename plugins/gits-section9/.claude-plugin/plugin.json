@@ -1,9 +1,10 @@
 {
   "name": "gits-section9",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Section 9 // Net Dive: a dark, animated cyberpunk theme inspired by 1995 anime cyber-noir.",
   "license": "MIT",
   "author": {
     "name": "charlieresendiz"
-  }
+  },
+  "types": "./types/index.d.ts"
 }
