@@ -1,0 +1,11 @@
+{
+  "name": "section9-theme",
+  "owner": { "name": "charlieresendiz" },
+  "plugins": [
+    {
+      "name": "gits-section9",
+      "source": "./plugins/gits-section9",
+      "description": "Section 9 // Net Dive: a dark, animated cyberpunk theme inspired by 1995 anime cyber-noir."
+    }
+  ]
+}
